@@ -4,7 +4,7 @@ interface UnitInput {
   [key: string]: unknown;
 }
 
-interface UnitOutput {
+export interface UnitOutput {
   type: UnitType;
   [key: string]: unknown;
 }
@@ -12,33 +12,33 @@ interface UnitOutput {
 type UnitClass = new(...arguments_: [Unit, UnitInput, Translator]) => Unit
 
 export abstract class Unit {
-  private parentUnit: Unit;
-  private input: UnitInput
-  private translator: Translator;
+  public parentUnit: Unit;
+  public input: UnitInput
+  public translator: Translator;
 
   constructor(parentUnit: Unit, input: UnitInput, translator: Translator) {
     this.parentUnit = parentUnit;
-    this.input = this.input;
+    this.input = input;
     this.translator = translator;
   }
 
   abstract parse(): UnitOutput
 
-  parseChild(input: UnitInput) {
-    this.translator.translate(this, input)
-  }
+  parseChild = (input: UnitInput) => this.translator.translate(this, input)
 
-  parseChildren(inputArr: UnitInput[]) {
-    inputArr.forEach(this.parseChild)
-  }
+  parseChildren = (inputArr: UnitInput[]) => inputArr.map(this.parseChild)
 
-  getParentUnit() {
+  getParentUnit = () => {
     return this.parentUnit
   }
 }
 
 export class Translator {
-  private unitsMap: Record<UnitType, UnitClass>
+  public unitsMap: Record<UnitType, UnitClass>
+
+  constructor() {
+    this.unitsMap = {} as Record<UnitType, UnitClass>
+  }
 
   registerUnit(type: UnitType, unit: UnitClass) {
     if (!this.unitsMap[type]) {
